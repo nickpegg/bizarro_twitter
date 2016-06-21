@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'bizarro_twitter/cli'
+BizarroTwitter::Cli.start
