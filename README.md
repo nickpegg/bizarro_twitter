@@ -8,7 +8,6 @@ Example: https://twitter.com/realnickpegg
 $ bizarro_twitter
 Commands:
   bizarro_twitter help [COMMAND]  # Describe available commands or one specific command
-  bizarro_twitter test            # test command do not use
   bizarro_twitter tweet           # Tweet nonsense
 
 Options:
