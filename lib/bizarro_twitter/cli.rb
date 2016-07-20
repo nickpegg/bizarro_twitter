@@ -21,6 +21,11 @@ module BizarroTwitter
                  type: :boolean,
                  default: false
 
+    class_option :f,
+                 desc: 'Post to Twitter no matter what',
+                 type: :boolean,
+                 default: false
+
     desc 'tweet', 'Tweet nonsense'
     def tweet
       validate_user
@@ -58,7 +63,11 @@ module BizarroTwitter
 
       # Only tweet if they have a tweet newer than ours
       def should_post?
-        !options[:dry_run] && twitter.their_last_tweet > twitter.our_last_tweet
+        doit = true
+        doit &&= twitter.their_last_tweet > twitter.our_last_tweet
+        doit &&= !options[:dry_run]
+        doit ||= options[:f]
+        doit
       end
 
       def validate_user
