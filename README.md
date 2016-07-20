@@ -7,14 +7,15 @@ Example: https://twitter.com/realnickpegg
 ```
 $ bizarro_twitter
 Commands:
-  bizarro_twitter help [COMMAND]  # Describe available commands or one specific command
+  bizarro_twitter help [COMMAND]  # Describe available commands or one speci...
   bizarro_twitter tweet           # Tweet nonsense
 
 Options:
   [--secrets=SECRETS]          # YAML file that contains twitter secrets
                                # Default: secrets.yml
-  [--user=USER]                # User to pull tweets from for Markov chain seeding
-  [--dry-run]                  # Don't post to Twitter
+  [--users=one two three]      # Users to pull tweets from for Markov chain seeding
+  [--dry-run], [--no-dry-run]  # Don't post to Twitter
+  [-f], [--no-f]               # Post to Twitter no matter what
 ```
 
 It's meant to be ran as a cronjob, like every 5 minutes. By default it only

@@ -5,8 +5,7 @@ module BizarroTwitter
   class Twitter
     attr_reader :client
 
-    def initialize(user, secrets = {})
-      @user = user
+    def initialize(secrets = {})
       @client = ::Twitter::REST::Client.new do |tw_config|
         tw_config.consumer_key = secrets['consumer_key']
         tw_config.consumer_secret = secrets['consumer_secret']
@@ -16,7 +15,7 @@ module BizarroTwitter
     end
 
     # Fetch tweets
-    def timeline
+    def timeline(user)
       tweets = []
       keep_going = true
       max_id = nil
@@ -25,7 +24,7 @@ module BizarroTwitter
       while keep_going
         begin
           options[:max_id] = max_id unless max_id.nil?
-          response = @client.user_timeline(@user, options)
+          response = @client.user_timeline(user, options)
 
           if response.empty?
             keep_going = false
@@ -33,7 +32,7 @@ module BizarroTwitter
             tweets += response.map(&:full_text)
             max_id = response.last.id - 1
           end
-        rescue Twitter::Error::TooManyRequests => e
+        rescue ::Twitter::Error::TooManyRequests => e
           sleep_time = e.rate_limit.reset_in + 1
           puts "Got rate-limited, sleeping for #{sleep_time} seconds"
           sleep sleep_time
@@ -49,9 +48,9 @@ module BizarroTwitter
       response.first.created_at
     end
 
-    def their_last_tweet
+    def their_last_tweet(user)
       options = { count: 1, include_rts: false }
-      response = @client.user_timeline(@user, options)
+      response = @client.user_timeline(user, options)
       response.first.created_at
     end
   end

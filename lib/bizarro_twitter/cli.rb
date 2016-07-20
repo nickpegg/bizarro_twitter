@@ -12,9 +12,9 @@ module BizarroTwitter
                  type: :string,
                  default: 'secrets.yml'
 
-    class_option :user,
-                 desc: 'User to pull tweets from for Markov chain seeding',
-                 type: :string
+    class_option :users,
+                 desc: 'Users to pull tweets from for Markov chain seeding',
+                 type: :array
 
     class_option :dry_run,
                  desc: "Don't post to Twitter",
@@ -28,12 +28,17 @@ module BizarroTwitter
 
     desc 'tweet', 'Tweet nonsense'
     def tweet
-      validate_user
+      validate_users
+
+      source_tweets = []
+      options[:users].each do |user|
+        source_tweets += twitter.timeline(user)
+      end
 
       # Get a suitably-sized tweet
       tweet = ''
       while tweet.length == 0 || tweet.length > 140
-        tweet = markov_chain.make_tweet(twitter.timeline)
+        tweet = markov_chain.make_tweet(source_tweets)
       end
 
       if should_post?
@@ -54,7 +59,7 @@ module BizarroTwitter
       end
 
       def twitter
-        @twitter ||= BizarroTwitter::Twitter.new(options[:user], secrets)
+        @twitter ||= BizarroTwitter::Twitter.new(secrets)
       end
 
       def markov_chain
@@ -64,17 +69,23 @@ module BizarroTwitter
       # Only tweet if they have a tweet newer than ours
       def should_post?
         doit = true
-        doit &&= twitter.their_last_tweet > twitter.our_last_tweet
+        # doit &&= twitter.their_last_tweet(options[:user]) > twitter.our_last_tweet
         doit &&= !options[:dry_run]
         doit ||= options[:f]
         doit
       end
 
-      def validate_user
-        if options[:user].nil?
-          puts 'You gotta specify a user to seed from!'
-          exit 1
-        end
+      def validate_users
+        bail 'You gotta specify a user to seed from!' if options[:users].nil?
+        bail 'You gotta specify a user to seed from!' if options[:users].empty?
+
+        non_string_users = options[:users].select { |u| !u.is_a?(String) }
+        bail "The following users are invalid: #{non_string_users}" unless non_string_users.empty?
+      end
+
+      def bail(message)
+        puts message
+        exit 1
       end
     end
   end
