@@ -14,7 +14,7 @@ Options:
   [--secrets=SECRETS]          # YAML file that contains twitter secrets
                                # Default: secrets.yml
   [--users=one two three]      # Users to pull tweets from for Markov chain seeding
-  [--dry-run], [--no-dry-run]  # Don't post to Twitter
+  [--dry-run]  # Don't post to Twitter
   [-f], [--no-f]               # Post to Twitter no matter what
 ```
 
@@ -31,7 +31,7 @@ bundle install --path .bundle
 1. Head over to twitter
 2. Create a bizarro account
 3. Sign up for API access
-4. Get yourself an access token as the bizarro user
+4. Get yourself an access token _as the bizarro user_. This is how it knows what user to tweet as.
 
 
 Drop the access token, consumer key, and secrets into a YAML file. `secrets.yml` is where the tool looks first. It should look like this:
